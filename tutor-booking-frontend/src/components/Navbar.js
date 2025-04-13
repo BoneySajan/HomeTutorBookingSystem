@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 const Navbar = () => {
@@ -12,12 +12,20 @@ const Navbar = () => {
     };
 
     return (
-        <nav>
-            <Link to="/">Home</Link> |{" "}
-            {!user && <Link to="/login">Login</Link>} |{" "}
-            {!user && <Link to="/register">Register</Link>} |{" "}
-            {user && <span>Welcome, {user.name}</span>} |{" "}
-            {user && <button onClick={handleLogout}>Logout</button>}
+        <nav style={{ padding: "10px", borderBottom: "1px solid #ccc" }}>
+            <Link to="/">Home</Link>{" | "}
+
+            {!user && <Link to="/login">Login</Link>}{" | "}
+            {!user && <Link to="/register">Register</Link>}
+
+            {user && (
+                <>
+                    <span style={{ margin: "0 10px" }}>
+                        👋 Hello, <strong>{user.name}</strong> ({user.role})
+                    </span>
+                    <button onClick={handleLogout}>Logout</button>
+                </>
+            )}
         </nav>
     );
 };

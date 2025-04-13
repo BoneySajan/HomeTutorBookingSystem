@@ -21,6 +21,9 @@ app.get("/", (req, res) => {
 // ✅ Register routes BEFORE server starts
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/tutors", require("./routes/tutorRoutes"));
+app.use("/api/bookings", require("./routes/bookingRoutes"));
+app.use("/api/reviews", require("./routes/reviewRoutes"));
+
 
 // ✅ Define port
 const PORT = process.env.PORT || 5000;
