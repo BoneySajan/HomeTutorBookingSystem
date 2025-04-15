@@ -34,7 +34,7 @@ router.post("/", authMiddleware, async (req, res) => {
         const fromMin = toMinutes(from);
         const toMin = toMinutes(to);
 
-        // 🟡 Fetch tutor profile
+        // Fetch tutor profile
         const tutorProfile = await Tutor.findById(tutor);
         if (!tutorProfile) return res.status(404).json({ message: "Tutor not found" });
 
@@ -54,7 +54,7 @@ router.post("/", authMiddleware, async (req, res) => {
         const availableFrom = toMinutes(availableDay.from);
         const availableTo = toMinutes(availableDay.to);
 
-        // 🟠 Check if booking is within tutor's availability
+        // Check if booking is within tutor's availability
         if (fromMin < availableFrom || toMin > availableTo) {
             return res.status(400).json({
                 message: `Please book within tutor's available time: ${availableDay.from} - ${availableDay.to}`
@@ -166,7 +166,6 @@ router.put("/:id/status", authMiddleware, async (req, res) => {
         const booking = await Booking.findById(req.params.id);
         if (!booking) return res.status(404).json({ message: "Booking not found" });
 
-        // Fix: Match tutor profile instead of user id
         const tutorProfile = await Tutor.findOne({ user: req.user.id });
         if (!tutorProfile || booking.tutor.toString() !== tutorProfile._id.toString()) {
             return res.status(403).json({ message: "Not authorized to update this booking" });

@@ -34,20 +34,20 @@ router.get("/", async (req, res) => {
     }
 });
 
-// ✅ Debugged version of GET /my-profile
+// ✅ GET /my-profile
 router.get("/my-profile", authMiddleware, async (req, res) => {
     try {
-        console.log("🟡 Incoming /my-profile request from:", req.user);
+        console.log("Incoming /my-profile request from:", req.user);
 
         // Find profile for currently logged-in tutor
         const profile = await Tutor.findOne({ user: req.user.id });
 
         if (!profile) {
-            console.log("🔴 No profile found for user:", req.user.id);
+            console.log("No profile found for user:", req.user.id);
             return res.status(404).json({ message: "No profile found" });
         }
 
-        console.log("🟢 Profile found:", profile._id);
+        console.log("Profile found:", profile._id);
         res.json(profile);
     } catch (error) {
         console.error("❌ Error fetching tutor profile:", error.message);
@@ -55,30 +55,30 @@ router.get("/my-profile", authMiddleware, async (req, res) => {
     }
 });
 
-// 🔍 Search tutors (by subject, rate, rating) + day and time filtering
+// Search tutors (by subject, rate, rating) + day and time filtering
 router.get("/search", async (req, res) => {
     const { subject, minRate, maxRate, minRating, day, time } = req.query;
 
     const query = { status: "approved" };
 
-    // 🔎 Filter by subject
+    // Filter by subject
     if (subject) {
         query.subjects = { $regex: subject, $options: "i" };
     }
 
-    // 💰 Filter by rate
+    // Filter by rate
     if (minRate || maxRate) {
         query.hourlyRate = {};
         if (minRate) query.hourlyRate.$gte = Number(minRate);
         if (maxRate) query.hourlyRate.$lte = Number(maxRate);
     }
 
-    // ⭐ Filter by minimum rating
+    // Filter by minimum rating
     if (minRating) {
         query.rating = { $gte: Number(minRating) };
     }
 
-    // 📆 Day + Time availability filter
+    // Day + Time availability filter
     if (day || time) {
         query.availability = {
             $elemMatch: {

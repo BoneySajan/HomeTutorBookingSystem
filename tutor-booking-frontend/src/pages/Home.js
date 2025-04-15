@@ -7,7 +7,7 @@ const Home = () => {
 
     return (
         <div style={{ padding: "2rem" }}>
-            <h2>🏠 Welcome to the Home Tutor Booking System</h2>
+            <h1> Welcome to the Home Tutor Booking System</h1>
 
             {user ? (
                 <>

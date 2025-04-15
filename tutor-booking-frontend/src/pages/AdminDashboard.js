@@ -4,12 +4,19 @@ import {
     approveTutor,
     rejectTutor
 } from "../api/tutorApi";
+import {
+    fetchAllUsers,
+    deleteUser
+} from "../api/adminApi";
 
 const AdminDashboard = () => {
     const [tutors, setTutors] = useState([]);
     const [bookings, setBookings] = useState([]);
+    const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [message, setMessage] = useState("");
+
+    const token = localStorage.getItem("token");
 
     const loadTutors = async () => {
         try {
@@ -25,23 +32,28 @@ const AdminDashboard = () => {
 
     const loadBookings = async () => {
         try {
-            const token = localStorage.getItem("token");
             const res = await fetch("http://localhost:5000/api/bookings", {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 }
             });
             const data = await res.json();
-            setBookings(data);
+            setBookings(Array.isArray(data) ? data : []);
         } catch (err) {
             setMessage("Failed to load bookings");
         }
     };
 
-    useEffect(() => {
-        loadTutors();
-        loadBookings();
-    }, []);
+    const loadUsers = async () => {
+        try {
+            const data = await fetchAllUsers();
+            console.log("✅ Users fetched:", data);
+            setUsers(data);
+        } catch (err) {
+            console.error("❌ Failed to load users:", err.message);
+            setMessage("Failed to load users");
+        }
+    };
 
     const handleApprove = async (id) => {
         try {
@@ -63,14 +75,29 @@ const AdminDashboard = () => {
         }
     };
 
+    const handleDeleteUser = async (id) => {
+        if (!window.confirm("Are you sure you want to delete this user?")) return;
+        try {
+            await deleteUser(id);
+            alert("User deleted");
+            loadUsers();
+        } catch {
+            alert("Failed to delete user");
+        }
+    };
+
+    useEffect(() => {
+        loadTutors();
+        loadBookings();
+        loadUsers();
+    }, []);
+
     return (
         <div style={{ padding: "1rem" }}>
             <h2>🛠️ Admin Dashboard</h2>
-
             {message && <p style={{ color: "green" }}>{message}</p>}
 
             <h3>👨‍🏫 Tutor Profiles</h3>
-
             {loading ? (
                 <p>Loading tutors...</p>
             ) : (
@@ -143,6 +170,37 @@ const AdminDashboard = () => {
                                 <td>{b.status}</td>
                             </tr>
                         ))}
+                    </tbody>
+                </table>
+            )}
+
+            <h3 style={{ marginTop: "3rem" }}>👥 User Management</h3>
+            {users.length === 0 ? (
+                <p>No users found.</p>
+            ) : (
+                <table border="1" cellPadding={10}>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                            {users
+                                .filter((user) => user.role !== "admin") 
+                                .map((user) => (
+                                    <tr key={user._id}>
+                                        <td>{user.name}</td>
+                                        <td>{user.email}</td>
+                                        <td>{user.role}</td>
+                                        <td>
+                                            <button onClick={() => handleDeleteUser(user._id)}>Delete</button>
+                                        </td>
+                                    </tr>
+                                ))}
+
                     </tbody>
                 </table>
             )}

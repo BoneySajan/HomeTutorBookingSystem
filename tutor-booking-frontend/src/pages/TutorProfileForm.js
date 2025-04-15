@@ -204,7 +204,7 @@ const TutorProfileForm = () => {
 
             {isEditing && (
                 <button onClick={handleDelete} style={{ marginTop: "10px", color: "red" }}>
-                    🗑️ Delete Profile
+                    Delete Profile
                 </button>
             )}
 

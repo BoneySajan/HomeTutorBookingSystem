@@ -21,6 +21,7 @@ app.get("/", (req, res) => {
 // ✅ Register routes BEFORE server starts
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/tutors", require("./routes/tutorRoutes"));
+app.use("/api/admin", require("./routes/adminRoutes"));
 app.use("/api/bookings", require("./routes/bookingRoutes"));
 app.use("/api/reviews", require("./routes/reviewRoutes"));
 
@@ -33,7 +34,7 @@ mongoose.connect(process.env.MONGO_URI)
     .then(() => {
         console.log("✅ MongoDB connected successfully");
         app.listen(PORT, () => {
-            console.log(`🚀 Server running on port ${PORT}`);
+            console.log(`✅ Server running on port ${PORT}`);
         });
     })
     .catch((err) => {
