@@ -3,11 +3,11 @@ import {
     fetchAllTutors,
     approveTutor,
     rejectTutor
-} from "../api/tutorApi";
+} from "../api/tutorApi"; // Tutor-related API calls
 import {
     fetchAllUsers,
     deleteUser
-} from "../api/adminApi";
+} from "../api/adminApi"; // Admin-specific API calls
 
 const AdminDashboard = () => {
     const [tutors, setTutors] = useState([]);
@@ -16,8 +16,9 @@ const AdminDashboard = () => {
     const [loading, setLoading] = useState(true);
     const [message, setMessage] = useState("");
 
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token"); // Get auth token from storage
 
+    // Fetch all tutors from API
     const loadTutors = async () => {
         try {
             const data = await fetchAllTutors();
@@ -30,12 +31,11 @@ const AdminDashboard = () => {
         }
     };
 
+    // Fetch all bookings for display
     const loadBookings = async () => {
         try {
             const res = await fetch("http://localhost:5000/api/bookings", {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                }
+                headers: { Authorization: `Bearer ${token}` }
             });
             const data = await res.json();
             setBookings(Array.isArray(data) ? data : []);
@@ -44,6 +44,7 @@ const AdminDashboard = () => {
         }
     };
 
+    // Fetch all users (excluding admins in the view)
     const loadUsers = async () => {
         try {
             const data = await fetchAllUsers();
@@ -55,37 +56,41 @@ const AdminDashboard = () => {
         }
     };
 
+    // Approve tutor by ID
     const handleApprove = async (id) => {
         try {
             await approveTutor(id);
             setMessage("Tutor approved");
-            loadTutors();
+            loadTutors(); // Refresh tutor list
         } catch {
             setMessage("Approval failed");
         }
     };
 
+    // Reject tutor by ID
     const handleReject = async (id) => {
         try {
             await rejectTutor(id);
             setMessage("Tutor rejected");
-            loadTutors();
+            loadTutors(); // Refresh tutor list
         } catch {
             setMessage("Rejection failed");
         }
     };
 
+    // Delete user and cascade delete their profile/bookings
     const handleDeleteUser = async (id) => {
         if (!window.confirm("Are you sure you want to delete this user?")) return;
         try {
             await deleteUser(id);
             alert("User deleted");
-            loadUsers();
+            loadUsers(); // Refresh user list
         } catch {
             alert("Failed to delete user");
         }
     };
 
+    // Load all data on component
     useEffect(() => {
         loadTutors();
         loadBookings();
@@ -97,6 +102,7 @@ const AdminDashboard = () => {
             <h2>🛠️ Admin Dashboard</h2>
             {message && <p style={{ color: "green" }}>{message}</p>}
 
+            {/* Tutor Section */}
             <h3>👨‍🏫 Tutor Profiles</h3>
             {loading ? (
                 <p>Loading tutors...</p>
@@ -144,6 +150,7 @@ const AdminDashboard = () => {
                 </table>
             )}
 
+            {/* Booking Section */}
             <h3 style={{ marginTop: "3rem" }}>📆 All Bookings</h3>
             {bookings.length === 0 ? (
                 <p>No bookings available.</p>
@@ -174,6 +181,7 @@ const AdminDashboard = () => {
                 </table>
             )}
 
+            {/* User Section */}
             <h3 style={{ marginTop: "3rem" }}>👥 User Management</h3>
             {users.length === 0 ? (
                 <p>No users found.</p>
@@ -188,19 +196,18 @@ const AdminDashboard = () => {
                         </tr>
                     </thead>
                     <tbody>
-                            {users
-                                .filter((user) => user.role !== "admin") 
-                                .map((user) => (
-                                    <tr key={user._id}>
-                                        <td>{user.name}</td>
-                                        <td>{user.email}</td>
-                                        <td>{user.role}</td>
-                                        <td>
-                                            <button onClick={() => handleDeleteUser(user._id)}>Delete</button>
-                                        </td>
-                                    </tr>
-                                ))}
-
+                        {users
+                            .filter((user) => user.role !== "admin") // Hide admin users from the list
+                            .map((user) => (
+                                <tr key={user._id}>
+                                    <td>{user.name}</td>
+                                    <td>{user.email}</td>
+                                    <td>{user.role}</td>
+                                    <td>
+                                        <button onClick={() => handleDeleteUser(user._id)}>Delete</button>
+                                    </td>
+                                </tr>
+                            ))}
                     </tbody>
                 </table>
             )}

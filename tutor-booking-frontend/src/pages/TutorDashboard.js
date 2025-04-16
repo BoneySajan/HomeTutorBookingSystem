@@ -4,28 +4,31 @@ import { fetchMyTutorProfile } from "../api/tutorApi";
 import { getUserFromToken } from "../api/authApi";
 
 const TutorDashboard = () => {
+    // Local state to store tutor profile, loading, and error message
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const navigate = useNavigate();
 
+    // Fetch the logged-in tutor's profile from the server
     const loadProfile = async () => {
         try {
             const token = localStorage.getItem("token");
-            const data = await fetchMyTutorProfile(token);
-            setProfile(data);
+            const data = await fetchMyTutorProfile(token); // API call
+            setProfile(data); // Save profile
         } catch (err) {
-            setError("No tutor profile found.");
+            setError("No tutor profile found."); // Error if profile not found
         } finally {
-            setLoading(false);
+            setLoading(false); // Stop loading indicator
         }
     };
 
+    // Load the tutor profile when the component mounts
     useEffect(() => {
         loadProfile();
     }, []);
 
-    // 🛎️ One-time booking notification for tutor
+    // Show booking notifications (new bookings or cancellations)
     useEffect(() => {
         const checkTutorBookingStatus = async () => {
             const token = localStorage.getItem("token");
@@ -39,9 +42,11 @@ const TutorDashboard = () => {
             if (res.ok && data.length > 0) {
                 const shownMap = JSON.parse(localStorage.getItem("tutorShownMap") || "{}");
 
+                // Loop through all bookings
                 for (let booking of data) {
                     const lastStatus = shownMap[booking._id];
 
+                    // Show alerts only if the booking's status has changed since last viewed
                     if (lastStatus !== booking.status) {
                         if (booking.status === "pending") {
                             alert(`📢 New booking from ${booking.student?.name || "a student"} on ${booking.date} (${booking.from} - ${booking.to})`);
@@ -49,6 +54,7 @@ const TutorDashboard = () => {
                             alert(`❌ Booking by ${booking.student?.name || "a student"} on ${booking.date} was cancelled.`);
                         }
 
+                        // Save latest status in localStorage
                         shownMap[booking._id] = booking.status;
                     }
                 }
@@ -57,19 +63,20 @@ const TutorDashboard = () => {
             }
         };
 
-        checkTutorBookingStatus();
+        checkTutorBookingStatus(); // Run notification check once on mount
     }, []);
 
-
-
+    // Navigate to tutor profile creation
     const handleCreate = () => {
         navigate("/tutor/profile");
     };
 
+    // Navigate to edit profile page
     const handleEdit = () => {
         navigate("/tutor/profile");
     };
 
+    // Get logged-in user from token
     const user = getUserFromToken();
 
     return (
@@ -79,8 +86,10 @@ const TutorDashboard = () => {
                 👋 Hello, <strong>{user?.name}</strong> ({user?.role})
             </p>
 
+            {/* Show loading state while fetching profile */}
             {loading && <p>Loading profile...</p>}
 
+            {/* Show create profile button if no profile found */}
             {!loading && !profile && (
                 <>
                     <p style={{ color: "red" }}>No tutor profile found.</p>
@@ -88,20 +97,24 @@ const TutorDashboard = () => {
                 </>
             )}
 
+            {/* Display profile info if available */}
             {!loading && profile && (
                 <>
                     <p>
                         <strong>Status:</strong> {profile.status}
                     </p>
 
+                    {/* Message if profile was rejected */}
                     {profile.status === "rejected" && (
                         <p style={{ color: "red" }}>
                             ❌ Your profile was rejected. Please contact admin.
                         </p>
                     )}
 
+                    {/* Show edit profile option */}
                     <button onClick={handleEdit}>✏️ Edit Profile</button>
 
+                    {/* Show bookings link only if profile is approved */}
                     {profile.status === "approved" && (
                         <>
                             <br />
@@ -110,7 +123,6 @@ const TutorDashboard = () => {
                     )}
                 </>
             )}
-
         </div>
     );
 };
