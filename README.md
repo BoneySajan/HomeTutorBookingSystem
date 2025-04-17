@@ -88,6 +88,7 @@ npm run dev
 
 
 Usage
+
 Open http://localhost:3000 in a browser.
 
 Register as a student or tutor.
@@ -100,6 +101,7 @@ Admins can approve tutors, manage users, and monitor bookings.
 
 
 Testing
+
 This project has been manually tested for:
 
 Registration and login functionality
@@ -114,6 +116,7 @@ Review and rating submission
 
 
 Notes
+
 JWT tokens are securely stored in localStorage
 
 Backend routes are protected with role-based middleware
