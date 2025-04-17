@@ -43,11 +43,10 @@ Ensure the following are installed:
 - Node.js (v16 or higher): [https://nodejs.org](https://nodejs.org)
 - MongoDB (MongoDB Atlas)
 - You need a MongoDB instance running:
-o	Cloud-hosted via MongoDB Atlas 
-o	Email: boneysajan03@gmail.com
-o	Password: 4mongodb123
-o	Kindly add your IP Address in Network Access page if facing issue with MongoDB Atlas.
-
+-	Cloud-hosted via MongoDB Atlas 
+- Email: boneysajan03@gmail.com
+-	Password: 4mongodb123
+-	Kindly add your IP Address in Network Access page if facing issue with MongoDB Atlas.
 - Git
 
 ---
